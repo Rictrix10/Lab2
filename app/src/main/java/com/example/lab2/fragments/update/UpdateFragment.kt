@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +33,14 @@ class UpdateFragment : Fragment() {
 
         view.findViewById<TextView>(R.id.updateNote).text = args.currentNote.note
 
+        val datePicker = view.findViewById<DatePicker>(R.id.updateDate)
+        val dateParts = args.currentNote.date.split("/")
+        val day = dateParts[0].toInt()
+        val month = dateParts[1].toInt() - 1  // Subtrair 1 do mês porque o DatePicker usa index base zero para os meses
+        val year = dateParts[2].toInt()
+
+        datePicker.updateDate(year, month, day)
+
         val updateButton = view.findViewById<Button>(R.id.update)
         updateButton.setOnClickListener {
             updateNote()
@@ -52,12 +61,19 @@ class UpdateFragment : Fragment() {
 
     private  fun updateNote(){
         val noteText = view?.findViewById<EditText>(R.id.updateNote)?.text.toString()
+        val datePicker = view?.findViewById<DatePicker>(R.id.updateDate)
 
         if(noteText.isEmpty()) {
             makeText(context , "Não pode uma nota vazia!", Toast.LENGTH_LONG).show()
         }
         else {
-            val note = Note(args.currentNote.id, noteText)
+            val day = datePicker?.dayOfMonth ?: 0
+            val month = datePicker?.month ?: 0
+            val year = datePicker?.year ?: 0
+
+            val selectedDate = "$day/${month + 1}/$year"
+
+            val note = Note(args.currentNote.id, noteText, selectedDate)
 
             mNoteViewModel.updateNote(note)
 

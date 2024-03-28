@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -40,12 +41,19 @@ class AddFragment : Fragment() {
 
     private fun addNote() {
         val noteText = view?.findViewById<EditText>(R.id.addNote)?.text.toString()
+        val datePicker = view?.findViewById<DatePicker>(R.id.addDate)
 
         if(noteText.isEmpty()) {
             Toast.makeText(view?.context, "Não pode uma nota vazia!", Toast.LENGTH_LONG).show()
         }
         else {
-            val note = Note(0, noteText)
+            val day = datePicker?.dayOfMonth ?: 0
+            val month = datePicker?.month ?: 0
+            val year = datePicker?.year ?: 0
+
+            val selectedDate = "$day/${month + 1}/$year"
+
+            val note = Note(0, noteText, selectedDate)
 
             mNoteViewModel.addNote(note)
 
@@ -53,4 +61,5 @@ class AddFragment : Fragment() {
             findNavController().navigate(R.id.action_addFragment_to_listFragment)
         }
     }
+
 }
