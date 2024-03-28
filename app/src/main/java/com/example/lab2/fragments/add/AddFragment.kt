@@ -43,13 +43,16 @@ class AddFragment : Fragment() {
         val noteText = view?.findViewById<EditText>(R.id.addNote)?.text.toString()
         val datePicker = view?.findViewById<DatePicker>(R.id.addDate)
 
-        if(noteText.isEmpty()) {
-            Toast.makeText(view?.context, "Não pode uma nota vazia!", Toast.LENGTH_LONG).show()
-        }
-        else {
-            val day = datePicker?.dayOfMonth ?: 0
-            val month = datePicker?.month ?: 0
-            val year = datePicker?.year ?: 0
+        if (noteText.isEmpty()) {
+            Toast.makeText(view?.context, getString(R.string.noSave), Toast.LENGTH_LONG).show()
+        } else if (noteText.length != 0 && noteText.length < 5  ) {
+            Toast.makeText(view?.context, getString(R.string.minNote), Toast.LENGTH_LONG).show()
+        } else if (datePicker == null) {
+            Toast.makeText(view?.context, getString(R.string.selectDate), Toast.LENGTH_LONG).show()
+        } else {
+            val day = datePicker.dayOfMonth
+            val month = datePicker.month
+            val year = datePicker.year
 
             val selectedDate = "$day/${month + 1}/$year"
 
@@ -57,9 +60,11 @@ class AddFragment : Fragment() {
 
             mNoteViewModel.addNote(note)
 
-            Toast.makeText(requireContext(), "Gravado com sucesso!", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.saved), Toast.LENGTH_LONG).show()
             findNavController().navigate(R.id.action_addFragment_to_listFragment)
         }
     }
+
+
 
 }

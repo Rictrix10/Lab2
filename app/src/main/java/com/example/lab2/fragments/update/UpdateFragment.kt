@@ -36,7 +36,7 @@ class UpdateFragment : Fragment() {
         val datePicker = view.findViewById<DatePicker>(R.id.updateDate)
         val dateParts = args.currentNote.date.split("/")
         val day = dateParts[0].toInt()
-        val month = dateParts[1].toInt() - 1  // Subtrair 1 do mês porque o DatePicker usa index base zero para os meses
+        val month = dateParts[1].toInt() - 1
         val year = dateParts[2].toInt()
 
         datePicker.updateDate(year, month, day)
@@ -59,17 +59,20 @@ class UpdateFragment : Fragment() {
         return  view
     }
 
-    private  fun updateNote(){
+    private fun updateNote(){
         val noteText = view?.findViewById<EditText>(R.id.updateNote)?.text.toString()
         val datePicker = view?.findViewById<DatePicker>(R.id.updateDate)
 
         if(noteText.isEmpty()) {
-            makeText(context , "Não pode uma nota vazia!", Toast.LENGTH_LONG).show()
-        }
-        else {
-            val day = datePicker?.dayOfMonth ?: 0
-            val month = datePicker?.month ?: 0
-            val year = datePicker?.year ?: 0
+            Toast.makeText(requireContext(), getString(R.string.noUpdate), Toast.LENGTH_LONG).show()
+        } else if (noteText.length != 0 && noteText.length < 5  ) {
+            Toast.makeText(view?.context, getString(R.string.minNote), Toast.LENGTH_LONG).show()
+        } else if (datePicker == null) {
+            Toast.makeText(requireContext(), getString(R.string.selectDate), Toast.LENGTH_LONG).show()
+        } else {
+            val day = datePicker.dayOfMonth
+            val month = datePicker.month
+            val year = datePicker.year
 
             val selectedDate = "$day/${month + 1}/$year"
 
@@ -77,24 +80,25 @@ class UpdateFragment : Fragment() {
 
             mNoteViewModel.updateNote(note)
 
-            makeText(requireContext(), "Nota atualizada com sucesso!", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.updated), Toast.LENGTH_LONG).show()
             findNavController().navigate(R.id.action_updateFragment_to_listFragment)
         }
     }
 
+
     private fun deleteNote() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setPositiveButton("Sim") { _, _ ->
+        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
             mNoteViewModel.deleteNote(args.currentNote)
             makeText(
                 requireContext(),
-                "Nota apagada com sucesso!",
+                getString(R.string.deleted),
                 Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_updateFragment_to_listFragment)
         }
-        builder.setNegativeButton("Não") { _, _ -> }
-        builder.setTitle("Apagar")
-        builder.setMessage("Tem a certeza que pretende apagar a Nota?")
+        builder.setNegativeButton(getString(R.string.no)) { _, _ -> }
+        builder.setTitle(getString(R.string.delete))
+        builder.setMessage(getString(R.string.sureDelete))
         builder.create().show()
     }
 }
